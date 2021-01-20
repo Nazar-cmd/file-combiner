@@ -11,10 +11,10 @@ catch (err) {
 }
 
 
-const unitedFileIndex = testFiles.indexOf('united.txt')
+const unitedFileIndex = testFiles.indexOf('united.fna')
 
 if (unitedFileIndex > -1) {
-    fs.unlinkSync(`${testFolder}/united.txt`)
+    fs.unlinkSync(`${testFolder}/united.fna`)
     testFiles.splice(unitedFileIndex, 1)
 }
 
@@ -24,7 +24,9 @@ try {
     testFiles.forEach((file, index)=>{
             let fileContent = fs.readFileSync(`${testFolder}/${file}`, "utf8");
 
-            fs.appendFileSync(`${testFolder}/united.txt`, `\n${fileContent}`);
+            const appendContent = index? `\n${fileContent}` : fileContent;
+
+            fs.appendFileSync(`${testFolder}/united.fna`, appendContent);
 
             console.log(`${index+1}/${testFilesQuantity} done`)
         }
