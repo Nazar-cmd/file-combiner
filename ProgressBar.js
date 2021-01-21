@@ -1,15 +1,17 @@
-function progressBar(files) {
+function progressBar(filesQuantity, message) {
 
-    return function (currentFile) {
-        const dotsQuantity = Math.floor((currentFile*20)/files);
+    console.log(message)
+    return function (currentFileIndex) {
+        const dotsQuantity = ~~((currentFileIndex*20)/filesQuantity);
+
         const dots = ".".repeat(dotsQuantity);
 
         const emptyQuantity = 20 - dotsQuantity;
         const empty = " ".repeat(emptyQuantity);
 
-        const percents = (currentFile*100)/files;
+        const percents = (currentFileIndex*100)/filesQuantity;
 
-        process.stdout.write(`\r[${dots}${empty}] ${percents.toFixed(2)}%`);
+        process.stdout.write(`\r[${dots}${empty}] ${percents.toFixed(2)}% (${currentFileIndex} of ${filesQuantity})`);
     }
 }
 
