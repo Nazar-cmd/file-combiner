@@ -1,4 +1,7 @@
-const fs = require("fs");
+import {progressBar} from "./ProgressBar.js";
+import fs from "fs"
+
+
 const testFolder = './TestFiles';
 
 let testFiles = []
@@ -18,7 +21,8 @@ if (unitedFileIndex > -1) {
     testFiles.splice(unitedFileIndex, 1)
 }
 
-const testFilesQuantity = testFiles.length;
+const filesQuantity = testFiles.length;
+const progressBarIteration = progressBar(filesQuantity)
 
 try {
     testFiles.forEach((file, index)=>{
@@ -28,14 +32,13 @@ try {
 
             fs.appendFileSync(`${testFolder}/united.fna`, appendContent);
 
-            console.log(`${index+1}/${testFilesQuantity} done`)
+            progressBarIteration(index+1)
         }
     )
 }
 catch (e) {
-    console.log(e)
+    console.error(e)
 }
 
 
-//const UnitedFileContent = fs.readFileSync(`${testFolder}/united.txt`, "utf8");
 
