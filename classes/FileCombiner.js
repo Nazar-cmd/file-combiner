@@ -1,5 +1,5 @@
 import {progressBar} from "../ProgressBar.js";
-import {UserCommunication} from "./UserCommunication";
+import {UserCommunication} from "./UserCommunication.js";
 import fs from "fs"
 
 
@@ -10,11 +10,13 @@ class FileCombiner extends UserCommunication{
         this.filesFolderPath = `./${filesFolderName}`
     }
 
-    deleteFileFromFolder() {
-        fs.unlinkSync(`${this.filesFolderPath}/united.fna`);
+    deleteFileFromFolder(filename) {
+        fs.unlinkSync(`${this.filesFolderPath}/${filename}`);
+        console.log(`File ${filename} was deleted`)
     }
 
     folderExists() {
+        console.log(this,"asd")
         return fs.existsSync(this.filesFolderPath)
     }
 
@@ -22,11 +24,11 @@ class FileCombiner extends UserCommunication{
         return fs.readdirSync(this.filesFolderPath).length
     }
 
-    createFilesDir() {
+    createFilesFolder() {
         fs.mkdirSync(this.filesFolderPath);
     }
 
-    deleteAllFilesInDir() {
+    deleteAllFilesFromFolder() {
         if (fs.existsSync(this.filesFolderPath)) {
             const filesToDelete = fs.readdirSync(this.filesFolderPath);
 
@@ -39,7 +41,7 @@ class FileCombiner extends UserCommunication{
         }
         else {
             console.log("No such folder. Empty folder was created.");
-            this.createFilesDir(this.filesFolderPath)
+            this.createFilesFolder(this.filesFolderPath)
         }
     }
 

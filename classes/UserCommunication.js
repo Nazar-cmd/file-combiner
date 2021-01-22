@@ -1,6 +1,6 @@
 import readline from "readline";
 
-class UserCommunication {
+export class UserCommunication {
 
     noVariants = ['N','n','no','No','NO'];
     yesVariants = ['Y','y','yes','Yes','YES'];
@@ -18,5 +18,3 @@ class UserCommunication {
     }
 
 }
-
-export {UserCommunication}
