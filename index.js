@@ -2,7 +2,10 @@ import {progressBar} from "./ProgressBar.js";
 import fs from "fs"
 import readline from "readline"
 
+
 const filesDir = './TestFiles';
+
+
 
 function askQuestion(query) {
     const rl = readline.createInterface({
