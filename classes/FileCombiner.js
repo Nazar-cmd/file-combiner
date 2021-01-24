@@ -1,11 +1,9 @@
 import {progressBar} from "../ProgressBar.js";
-import {UserCommunication} from "./UserCommunication.js";
 import fs from "fs"
 
 
-class FileCombiner extends UserCommunication{
-    constructor(filesFolderName="FilesToCombine") {
-        super();
+class FileCombiner {
+    constructor(filesFolderName) {
         this.filesFolderName = filesFolderName;
         this.filesFolderPath = `./${filesFolderName}`
     }
@@ -16,7 +14,6 @@ class FileCombiner extends UserCommunication{
     }
 
     folderExists() {
-        console.log(this,"asd")
         return fs.existsSync(this.filesFolderPath)
     }
 

@@ -1,6 +1,8 @@
 import {FileCombiner} from "./classes/FileCombiner.js";
+import userCommunication from "./classes/UserCommunication.js"
 
-const fileCombiner = new FileCombiner("files")
+const fileCombiner = new FileCombiner("ForFnaFilesCombiner")
+
 
 
 if (!fileCombiner.folderExists()) {
@@ -9,12 +11,12 @@ if (!fileCombiner.folderExists()) {
 else {
     while (fileCombiner.getFilesQuantity()) {
 
-        const answer = await fileCombiner.askQuestion(`Delete all files from '${fileCombiner.filesFolderName}' folder? (Y/N): `)
+        const answer = await userCommunication.askQuestion(`Delete all files from '${fileCombiner.filesFolderName}' folder? (Y/N): `)
 
-        if (fileCombiner.yesVariants.includes(answer)) {
+        if (userCommunication.yesVariants.includes(answer)) {
             fileCombiner.deleteAllFilesFromFolder()
         }
-        else if (fileCombiner.noVariants.includes(answer)) {
+        else if (userCommunication.noVariants.includes(answer)) {
             break
         }
         else {
@@ -24,7 +26,7 @@ else {
 }
 
 while (fileCombiner.getFilesQuantity() < 2) {
-    await fileCombiner.askQuestion("\nUpload at least 2 files. Press 'Enter' to continue...")
+    await userCommunication.askQuestion(`\nUpload at least 2 files in '${fileCombiner.filesFolderName}' folder. Press 'Enter' to continue...`)
 }
 
 const files = [...fileCombiner.getFilesFromFolder()];
@@ -43,5 +45,5 @@ catch (e) {
     console.error(e)
 }
 
-console.log("\nFile united.fna was created")
+console.log(`\nFile united.fna was created in '${fileCombiner.filesFolderName}' folder.`)
 
