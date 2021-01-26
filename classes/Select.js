@@ -37,6 +37,25 @@ class Select {
 
     start() {
         stdout.write(this.question + '\n')
+
+        this.displayOptions()
+
+        //Todo: make this prettier
+        try {
+            stdin.setRawMode(true);
+        } catch (err) {
+            if(stdin.isTTY){
+                stdin.setRawMode(true);
+            }
+        }
+
+        stdin.resume()
+        stdin.setEncoding('utf-8')
+        this.hideCursor()
+        stdin.on("data", this.pn(this))
+    }
+
+    displayOptions() {
         for (let opt = 0; opt < this.options.length; opt++) {
             this.options[opt] = this.pointer + " " + this.options[opt]
             if (opt === this.options.length - 1) {
@@ -49,19 +68,6 @@ class Select {
             }
             this.cursorLocs.y = opt + 1
         }
-        //Todo: make this prettier
-        try {
-            stdin.setRawMode(true);
-        } catch (err) {
-            if(stdin.isTTY){
-                stdin.setRawMode(true);
-            }
-        }
-        /////////////////
-        stdin.resume()
-        stdin.setEncoding('utf-8')
-        this.hideCursor()
-        stdin.on("data", this.pn(this))
     }
 
     pn(self) {

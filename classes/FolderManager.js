@@ -1,6 +1,6 @@
 import rdl from "readline"
 import { readdirSync, statSync } from "fs";
-import { join } from "path"
+import {dirname, join} from "path"
 
 import child from 'child_process';
 import util from "util"
@@ -20,16 +20,81 @@ class FolderManager extends Select{
         super(folderManagerSettings)
 
         const initialPath = this.getInitialPath();
-        const folders = this.getFoldersByPath(initialPath);
-        const foldersPaths = folders.map(folderName => `${initialPath}\\${folderName}`)
-
         this.path = initialPath;
-        this.options = folders;
-        this.answers = foldersPaths;
+
+        this.makeReturnAndFoldersOptions(initialPath)
 
     }
 
+    async enter() {
+        this.clearOptionsFromScreen()
+
+        const answer = this.answers[this.input];
+        this.path = answer;
+
+        console.clear()
+        console.log({answer})
+
+        await this.optionChooser(answer)
+        this.displayOptions();
+    }
+
+    async optionChooser(path) {
+
+        if (path === "MY_COMPUTER") {
+            await this.makeVolumesOptions()
+        }
+        else {
+            this.makeReturnAndFoldersOptions(path)
+        }
+    }
+
+    async makeVolumesOptions() {
+        const volumes = await this.getVolumesNames()
+
+        this.options = [...volumes];
+        this.answers = [...volumes];
+    }
+
+    makeReturnAndFoldersOptions(path) {
+        const folders = this.getFoldersByPath(path);
+        const foldersPaths = this.makeFoldersPaths(folders, path);
+
+        const backButtonOption = "...";
+        const backButtonAnswer = this.removeOnePathLevel(path)
+
+        this.options = [backButtonOption, ...folders];
+        this.answers = [backButtonAnswer, ...foldersPaths];
+    }
+
+    makeFoldersPaths(folders, path) {
+        return folders.map(folderName => `${path}\\${folderName}`);
+    }
+
+    clearOptionsFromScreen() {
+        rdl.cursorTo(stdout, 0,1);
+        for (let opt = 0; opt < this.options.length; opt++) {
+
+            const optionLength = this.options[opt].length
+            const emptyString = " ".repeat(optionLength)+'\n'
+            stdout.write(emptyString)
+
+        }
+
+        rdl.cursorTo(stdout, 0, 1)
+    }
+
+    removeOnePathLevel(path) {
+        const newPath = dirname(path)
+
+        if (newPath !== path)
+            return newPath
+        else
+            return "MY_COMPUTER"
+    }
+
     getFoldersByPath(path) {
+
         const pathItems = readdirSync(path, { withFileTypes: true });
         return pathItems
             .filter(item => item.isDirectory())
@@ -39,7 +104,6 @@ class FolderManager extends Select{
     getInitialPath() {
         return process.cwd()
     }
-
 
     async getVolumesNames() {
         const exec = util.promisify(child.exec);
@@ -56,11 +120,11 @@ class FolderManager extends Select{
 }
 
 const stylingTypeSel = new FolderManager({
-    question: "Which styling do you want?",
-    pointer: "-",
+    question: "Select Folder with .fna files to continue",
+    pointer: ">",
     color: 'red'
 })
 
 stylingTypeSel.start()
 
-console.log("123")
+//console.log("123")
