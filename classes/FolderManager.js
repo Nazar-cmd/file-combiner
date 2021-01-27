@@ -1,6 +1,6 @@
 import rdl from "readline"
-import { readdirSync, statSync } from "fs";
-import {dirname, join} from "path"
+import { readdirSync } from "fs";
+import {dirname} from "path"
 
 import child from 'child_process';
 import util from "util"
@@ -68,7 +68,10 @@ class FolderManager extends Select{
     }
 
     makeFoldersPaths(folders, path) {
-        return folders.map(folderName => `${path}\\${folderName}`);
+        const backslash = path[path.length-1] !== "\\"
+            ? "\\"
+            : '';
+        return folders.map(folderName => `${path}${backslash}${folderName}`);
     }
 
     clearOptionsFromScreen() {
@@ -115,7 +118,7 @@ class FolderManager extends Select{
 
         return stdout.split('\r\r\n')
             .filter(value => /[A-Za-z]:/.test(value))
-            .map(value => value.trim())
+            .map(value => value.trim()+"\\")
     }
 }
 
