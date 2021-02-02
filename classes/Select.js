@@ -26,6 +26,8 @@ class Select {
 		if (options.length !== answers.length)
 			throw Error("'answers' and 'options' must be of the same length")
 
+		this.windowSize = this.getWindowSize()
+
 		this.question = question
 		this.options = options
 		this.answers = answers
@@ -61,10 +63,19 @@ class Select {
 	}
 
 	displayOptions() {
-		for (let opt = 0; opt < this.options.length; opt++) {
+		//TODO:
+
+		const optionsMoreThanHeight =
+			this.windowSize.height - 5 <= this.options.length
+
+		const optionsOnScreenQuantity = optionsMoreThanHeight
+			? this.windowSize.height - 5
+			: this.options.length
+
+		for (let opt = 0; opt <= optionsOnScreenQuantity; opt++) {
 			this.options[opt] = this.pointer + " " + this.options[opt]
-			if (opt === this.options.length - 1) {
-				this.input = this.options.length - 1
+			if (opt === optionsOnScreenQuantity) {
+				this.input = optionsOnScreenQuantity
 				this.options[opt] += "\n"
 				stdout.write(this.color(this.options[opt], this._color))
 			} else {
@@ -72,6 +83,11 @@ class Select {
 				stdout.write(this.options[opt])
 			}
 			this.cursorLocs.y = opt + 1
+		}
+
+		if (optionsMoreThanHeight) {
+			stdout.write(" ᐯᐯᐯ ")
+			this.cursorLocs.y++
 		}
 	}
 
@@ -180,15 +196,16 @@ class Select {
 	}
 
 	getWindowSize() {
-		return stdout.getWindowSize()
+		const [width, height] = stdout.getWindowSize()
+		return { width, height }
 	}
 }
 
 const stylingTypeSel = new Select({
 	question: "Select Folder with .fna files to continue",
 	pointer: ">",
-	options: ["1", "2"],
-	answers: ["3", "4"],
+	options: [...Array(100).keys()],
+	answers: [...Array(100).keys()],
 	color: "red"
 })
 
