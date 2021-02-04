@@ -82,22 +82,23 @@ class Select {
 		//rdl.cursorTo(stdout, 0, this.#linesBeforeList)
 
 		for (let opt = start; opt < end; opt++) {
-			let decoratedOption = this.pointer + " " + this.options[opt]
-			//this.options[opt] = this.pointer + " " + this.options[opt]
+			const decoratedOption = this.makeDecoratedOption(opt)
 			if (opt === end - 1) {
 				this.input = end - 1
-				decoratedOption += "\n"
 				stdout.write(this.color(decoratedOption, this._color))
 			} else {
-				decoratedOption += "\n"
 				stdout.write(decoratedOption)
 			}
 			this.cursorLocs.y = opt
 		}
 
 		if (end < this.options.length) {
-			stdout.write(" vvv ")
+			stdout.write(" ... ")
 		}
+	}
+
+	makeDecoratedOption(optionIndex) {
+		return `${this.pointer} ${this.options[optionIndex]}\n`
 	}
 
 	pn(self) {
@@ -145,8 +146,11 @@ class Select {
 
 	upArrow() {
 		let y = this.cursorLocs.y
+
+		const oldOption = this.makeDecoratedOption(y)
+
 		rdl.cursorTo(stdout, 0, y + this.#linesBeforeList)
-		stdout.write(this.options[y])
+		stdout.write(oldOption)
 
 		if (this.cursorLocs.y + 1 === 1) {
 			this.cursorLocs.y = this.options.length - 1
@@ -154,23 +158,21 @@ class Select {
 			this.cursorLocs.y--
 		}
 		y = this.cursorLocs.y
+
+		const newOption = this.makeDecoratedOption(y)
 		rdl.cursorTo(stdout, 0, y + this.#linesBeforeList)
-		stdout.write(this.color(this.options[y], this._color))
+		stdout.write(this.color(newOption, this._color))
 		this.input = y
 	}
 
 	downArrow() {
 		let y = this.cursorLocs.y
 		const lastElementIndex = this.getLastElementIndex()
-		//&& y + 1 !== this.options.length - 1
 
 		if (y + 1 >= lastElementIndex && y + 1 !== this.options.length) {
 			//TODO: Why +2
 
 			const startIndex = y + 2 - lastElementIndex
-
-			rdl.cursorTo(stdout, 0, 2)
-			stdout.write(startIndex + "" + y)
 
 			this.displayOptions(startIndex, y + 2)
 			return
