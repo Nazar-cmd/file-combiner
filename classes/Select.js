@@ -47,12 +47,7 @@ class Select {
 		this.clearScreen(0)
 		stdout.write(this.question + "\n")
 
-		const totalSpacing = this.#linesAfterList + this.#linesBeforeList
-
-		const lastElementIndex =
-			this.windowSize.height - totalSpacing <= this.options.length
-				? this.windowSize.height - totalSpacing
-				: this.options.length
+		const lastElementIndex = this.getLastElementIndex()
 
 		this.displayOptions(0, lastElementIndex)
 
@@ -73,28 +68,36 @@ class Select {
 		stdin.on("data", this.pn(this))
 	}
 
+	getLastElementIndex() {
+		const totalSpacing = this.#linesAfterList + this.#linesBeforeList
+
+		return this.windowSize.height - totalSpacing <= this.options.length
+			? this.windowSize.height - totalSpacing
+			: this.options.length
+	}
+
 	displayOptions(start, end) {
 		//TODO:
-
-		rdl.cursorTo(stdout, 0, this.#linesBeforeList)
+		this.clearScreen(this.#linesBeforeList)
+		//rdl.cursorTo(stdout, 0, this.#linesBeforeList)
 
 		for (let opt = start; opt < end; opt++) {
-			this.options[opt] = this.pointer + " " + this.options[opt]
+			let decoratedOption = this.pointer + " " + this.options[opt]
+			//this.options[opt] = this.pointer + " " + this.options[opt]
 			if (opt === end - 1) {
 				this.input = end - 1
-				this.options[opt] += "\n"
-				stdout.write(this.color(this.options[opt], this._color))
+				decoratedOption += "\n"
+				stdout.write(this.color(decoratedOption, this._color))
 			} else {
-				this.options[opt] += "\n"
-				stdout.write(this.options[opt])
+				decoratedOption += "\n"
+				stdout.write(decoratedOption)
 			}
 			this.cursorLocs.y = opt
 		}
 
-		/*if (this.windowSize.height - 5 < this.options.length) {
+		if (end < this.options.length) {
 			stdout.write(" vvv ")
-			this.cursorLocs.y++
-		}*/
+		}
 	}
 
 	pn(self) {
@@ -158,6 +161,21 @@ class Select {
 
 	downArrow() {
 		let y = this.cursorLocs.y
+		const lastElementIndex = this.getLastElementIndex()
+		//&& y + 1 !== this.options.length - 1
+
+		if (y + 1 >= lastElementIndex && y + 1 !== this.options.length) {
+			//TODO: Why +2
+
+			const startIndex = y + 2 - lastElementIndex
+
+			rdl.cursorTo(stdout, 0, 2)
+			stdout.write(startIndex + "" + y)
+
+			this.displayOptions(startIndex, y + 2)
+			return
+		}
+
 		rdl.cursorTo(stdout, 0, y + this.#linesBeforeList)
 		stdout.write(this.options[y])
 
@@ -210,8 +228,8 @@ class Select {
 const stylingTypeSel = new Select({
 	question: "Select Folder with .fna files to continue",
 	pointer: ">",
-	options: [...Array(10).keys()],
-	answers: [...Array(10).keys()],
+	options: [...Array(100).keys()],
+	answers: [...Array(100).keys()],
 	color: "red"
 })
 
