@@ -5,6 +5,9 @@ const stderr = process.stderr
 import rdl from "readline"
 
 class Select {
+	#linesBeforeList = 3
+	#linesAfterList = 2
+
 	constructor(
 		selectSettings = {
 			question: "",
@@ -41,9 +44,17 @@ class Select {
 	}
 
 	start() {
+		this.clearScreen(0)
 		stdout.write(this.question + "\n")
 
-		this.displayOptions()
+		const totalSpacing = this.#linesAfterList + this.#linesBeforeList
+
+		const lastElementIndex =
+			this.windowSize.height - totalSpacing <= this.options.length
+				? this.windowSize.height - totalSpacing
+				: this.options.length
+
+		this.displayOptions(0, lastElementIndex)
 
 		//Todo: make this prettier
 
@@ -62,33 +73,28 @@ class Select {
 		stdin.on("data", this.pn(this))
 	}
 
-	displayOptions() {
+	displayOptions(start, end) {
 		//TODO:
 
-		const optionsMoreThanHeight =
-			this.windowSize.height - 5 <= this.options.length
+		rdl.cursorTo(stdout, 0, this.#linesBeforeList)
 
-		const optionsOnScreenQuantity = optionsMoreThanHeight
-			? this.windowSize.height - 5
-			: this.options.length
-
-		for (let opt = 0; opt <= optionsOnScreenQuantity; opt++) {
+		for (let opt = start; opt < end; opt++) {
 			this.options[opt] = this.pointer + " " + this.options[opt]
-			if (opt === optionsOnScreenQuantity) {
-				this.input = optionsOnScreenQuantity
+			if (opt === end - 1) {
+				this.input = end - 1
 				this.options[opt] += "\n"
 				stdout.write(this.color(this.options[opt], this._color))
 			} else {
 				this.options[opt] += "\n"
 				stdout.write(this.options[opt])
 			}
-			this.cursorLocs.y = opt + 1
+			this.cursorLocs.y = opt
 		}
 
-		if (optionsMoreThanHeight) {
-			stdout.write(" ᐯᐯᐯ ")
+		/*if (this.windowSize.height - 5 < this.options.length) {
+			stdout.write(" vvv ")
 			this.cursorLocs.y++
-		}
+		}*/
 	}
 
 	pn(self) {
@@ -136,35 +142,35 @@ class Select {
 
 	upArrow() {
 		let y = this.cursorLocs.y
-		rdl.cursorTo(stdout, 0, y)
-		stdout.write(this.options[y - 1])
+		rdl.cursorTo(stdout, 0, y + this.#linesBeforeList)
+		stdout.write(this.options[y])
 
-		if (this.cursorLocs.y === 1) {
-			this.cursorLocs.y = this.options.length
+		if (this.cursorLocs.y + 1 === 1) {
+			this.cursorLocs.y = this.options.length - 1
 		} else {
 			this.cursorLocs.y--
 		}
 		y = this.cursorLocs.y
-		rdl.cursorTo(stdout, 0, y)
-		stdout.write(this.color(this.options[y - 1], this._color))
-		this.input = y - 1
+		rdl.cursorTo(stdout, 0, y + this.#linesBeforeList)
+		stdout.write(this.color(this.options[y], this._color))
+		this.input = y
 	}
 
 	downArrow() {
 		let y = this.cursorLocs.y
-		rdl.cursorTo(stdout, 0, y)
-		stdout.write(this.options[y - 1])
-		//l(y)
-		//l(opts[y - 1])
-		if (this.cursorLocs.y === this.options.length) {
-			this.cursorLocs.y = 1
+		rdl.cursorTo(stdout, 0, y + this.#linesBeforeList)
+		stdout.write(this.options[y])
+
+		if (this.cursorLocs.y + 1 === this.options.length) {
+			this.cursorLocs.y = 0
 		} else {
 			this.cursorLocs.y++
 		}
+
 		y = this.cursorLocs.y
-		rdl.cursorTo(stdout, 0, y)
-		stdout.write(this.color(this.options[y - 1], this._color))
-		this.input = y - 1
+		rdl.cursorTo(stdout, 0, y + this.#linesBeforeList)
+		stdout.write(this.color(this.options[y], this._color))
+		this.input = y
 	}
 
 	hideCursor() {
@@ -204,8 +210,8 @@ class Select {
 const stylingTypeSel = new Select({
 	question: "Select Folder with .fna files to continue",
 	pointer: ">",
-	options: [...Array(100).keys()],
-	answers: [...Array(100).keys()],
+	options: [...Array(10).keys()],
+	answers: [...Array(10).keys()],
 	color: "red"
 })
 
