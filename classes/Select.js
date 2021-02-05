@@ -76,22 +76,28 @@ class Select {
 			: this.options.length
 	}
 
-	displayOptions(start, end) {
+	displayOptions(start, end, cursorOnTop = false) {
 		//TODO:
 		this.clearScreen(this.#linesBeforeList)
 		//rdl.cursorTo(stdout, 0, this.#linesBeforeList)
 
 		for (let opt = start; opt < end; opt++) {
 			const decoratedOption = this.makeDecoratedOption(opt)
-			if (opt === end - 1) {
+
+			if (opt === end - 1 && !cursorOnTop) {
 				this.selectedItemIndex = end - 1
+				this.cursorPos.y =
+					this.getLastElementIndex() + this.#linesBeforeList - 1
+				stdout.write(this.color(decoratedOption, this._color))
+			} else if (opt === start && cursorOnTop) {
+				this.selectedItemIndex = start
+				this.cursorPos.y = this.#linesBeforeList
 				stdout.write(this.color(decoratedOption, this._color))
 			} else {
 				stdout.write(decoratedOption)
 			}
 		}
 		// TODO:
-		this.cursorPos.y = this.getLastElementIndex() + this.#linesBeforeList - 1
 
 		if (end < this.options.length) {
 			stdout.write(" ... ")
@@ -157,7 +163,7 @@ class Select {
 		if (y === this.#linesBeforeList && index !== 0) {
 			const endIndex = index + lastElementIndex - 1
 
-			this.displayOptions(index - 1, endIndex)
+			this.displayOptions(index - 1, endIndex, true)
 		} else {
 			const oldOption = this.makeDecoratedOption(index)
 
@@ -244,6 +250,7 @@ class Select {
 		const _color = colors[colorName]
 		const start = "\x1b[" + _color[0] + "m"
 		const stop = "\x1b[" + _color[1] + "m\x1b[0m"
+
 		return start + str + stop
 	}
 
@@ -254,6 +261,7 @@ class Select {
 
 	getWindowSize() {
 		const [width, height] = stdout.getWindowSize()
+
 		return { width, height }
 	}
 }
