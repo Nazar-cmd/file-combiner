@@ -5,8 +5,8 @@ const stderr = process.stderr
 import rdl from "readline"
 
 class Select {
-	#linesBeforeList = 3
-	#linesAfterList = 2
+	static #linesBeforeList = 3
+	static #linesAfterList = 2
 
 	constructor(
 		selectSettings = {
@@ -41,6 +41,18 @@ class Select {
 			x: 0,
 			y: 0
 		}
+	}
+
+	static setSpacing(before = 3, after = 2) {
+		Select.#linesBeforeList = before
+		Select.#linesAfterList = after
+	}
+
+	static getSpacing() {
+		const before = Select.#linesBeforeList,
+			after = Select.#linesAfterList
+
+		return { before, after }
 	}
 
 	start() {
@@ -176,14 +188,8 @@ class Select {
 			rdl.clearLine(stdout, 0)
 			stdout.write(oldOption)
 
-			if (index + 1 === 1) {
-				//TODO:
-				//this.cursorPos.y = this.getLastElementIndex() + this.#linesBeforeList
-				//index =
-			} else {
-				index--
-				y--
-			}
+			index--
+			y--
 
 			const newOption = this.makeDecoratedOption(index)
 
@@ -220,15 +226,8 @@ class Select {
 			rdl.cursorTo(stdout, 0, y)
 			stdout.write(oldOption)
 
-			if (index + 1 === this.options.length) {
-				/*const lastElementIndex = this.getLastElementIndex()
-				this.displayOptions(0, lastElementIndex)
-				this.selectedItemIndex = 0
-				return*/
-			} else {
-				index++
-				if (y <= lastElementIndex + 1) y++
-			}
+			index++
+			y++
 
 			const newOption = this.makeDecoratedOption(index)
 
