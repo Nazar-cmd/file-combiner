@@ -149,32 +149,40 @@ class Select {
 		let y = this.cursorPos.y
 		let index = this.selectedItemIndex
 
+		const lastElementIndex = this.getLastElementIndex()
+
 		rdl.cursorTo(stdout, 0, 2)
 		stdout.write("   " + JSON.stringify({ y, index }) + "  ")
 
-		const oldOption = this.makeDecoratedOption(index)
+		if (y === this.#linesBeforeList && index !== 0) {
+			const endIndex = index + lastElementIndex - 1
 
-		rdl.cursorTo(stdout, 0, y)
-		rdl.clearLine(stdout, 0)
-		stdout.write(oldOption)
-
-		if (index + 1 === 1) {
-			//TODO:
-			//this.cursorPos.y = this.getLastElementIndex() + this.#linesBeforeList
-			//index =
+			this.displayOptions(index - 1, endIndex)
 		} else {
-			index--
-			y--
+			const oldOption = this.makeDecoratedOption(index)
+
+			rdl.cursorTo(stdout, 0, y)
+			rdl.clearLine(stdout, 0)
+			stdout.write(oldOption)
+
+			if (index + 1 === 1) {
+				//TODO:
+				//this.cursorPos.y = this.getLastElementIndex() + this.#linesBeforeList
+				//index =
+			} else {
+				index--
+				y--
+			}
+
+			const newOption = this.makeDecoratedOption(index)
+
+			rdl.cursorTo(stdout, 0, y)
+			rdl.clearLine(stdout, 0)
+			stdout.write(this.color(newOption, this._color))
+
+			this.selectedItemIndex = index
+			this.cursorPos.y = y
 		}
-
-		const newOption = this.makeDecoratedOption(index)
-
-		rdl.cursorTo(stdout, 0, y)
-		rdl.clearLine(stdout, 0)
-		stdout.write(this.color(newOption, this._color))
-
-		this.selectedItemIndex = index
-		this.cursorPos.y = y
 	}
 
 	downArrow() {
@@ -183,14 +191,11 @@ class Select {
 
 		const lastElementIndex = this.getLastElementIndex()
 
-		rdl.cursorTo(stdout, 0, 2)
-		stdout.write("   " + JSON.stringify({ y, index }) + "  ")
-
 		//TODO: Why +2 + if
 
 		if (
-			y === lastElementIndex + this.#linesBeforeList - 1 &&
-			index !== this.options.length - 1
+			y + 1 === lastElementIndex + this.#linesBeforeList &&
+			index + 1 !== this.options.length
 		) {
 			const startIndex = index + 2 - lastElementIndex
 
