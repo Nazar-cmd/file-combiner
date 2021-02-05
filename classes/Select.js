@@ -36,8 +36,8 @@ class Select {
 		this.answers = answers
 		this.pointer = pointer
 		this._color = color
-		this.input
-		this.cursorLocs = {
+		this.selectedItemIndex = 0
+		this.cursorPos = {
 			x: 0,
 			y: 0
 		}
@@ -69,10 +69,10 @@ class Select {
 	}
 
 	getLastElementIndex() {
-		const totalSpacing = this.#linesAfterList + this.#linesBeforeList
+		const spacing = this.#linesBeforeList + this.#linesAfterList
 
-		return this.windowSize.height - totalSpacing <= this.options.length
-			? this.windowSize.height - totalSpacing
+		return this.windowSize.height - spacing <= this.options.length
+			? this.windowSize.height - spacing
 			: this.options.length
 	}
 
@@ -84,13 +84,14 @@ class Select {
 		for (let opt = start; opt < end; opt++) {
 			const decoratedOption = this.makeDecoratedOption(opt)
 			if (opt === end - 1) {
-				this.input = end - 1
+				this.selectedItemIndex = end - 1
 				stdout.write(this.color(decoratedOption, this._color))
 			} else {
 				stdout.write(decoratedOption)
 			}
-			this.cursorLocs.y = opt
 		}
+		// TODO:
+		this.cursorPos.y = this.getLastElementIndex() + this.#linesBeforeList - 1
 
 		if (end < this.options.length) {
 			stdout.write(" ... ")
@@ -132,9 +133,9 @@ class Select {
 		stdin.setRawMode(false)
 		stdin.pause()
 		this.showCursor()
-		rdl.cursorTo(stdout, 0, this.options.length + 1)
-		console.log("\nYou selected: " + this.answers[this.input])
-		//this.input = null
+		//TODO:
+		rdl.cursorTo(stdout, 0, 1)
+		console.log("\nYou selected: " + this.answers[this.selectedItemIndex])
 	}
 
 	ctrlc() {
@@ -145,52 +146,77 @@ class Select {
 	}
 
 	upArrow() {
-		let y = this.cursorLocs.y
+		let y = this.cursorPos.y
+		let index = this.selectedItemIndex
 
-		const oldOption = this.makeDecoratedOption(y)
+		rdl.cursorTo(stdout, 0, 2)
+		stdout.write("   " + JSON.stringify({ y, index }) + "  ")
 
-		rdl.cursorTo(stdout, 0, y + this.#linesBeforeList)
+		const oldOption = this.makeDecoratedOption(index)
+
+		rdl.cursorTo(stdout, 0, y)
+		rdl.clearLine(stdout, 0)
 		stdout.write(oldOption)
 
-		if (this.cursorLocs.y + 1 === 1) {
-			this.cursorLocs.y = this.options.length - 1
+		if (index + 1 === 1) {
+			//TODO:
+			//this.cursorPos.y = this.getLastElementIndex() + this.#linesBeforeList
+			//index =
 		} else {
-			this.cursorLocs.y--
+			index--
+			y--
 		}
-		y = this.cursorLocs.y
 
-		const newOption = this.makeDecoratedOption(y)
-		rdl.cursorTo(stdout, 0, y + this.#linesBeforeList)
+		const newOption = this.makeDecoratedOption(index)
+
+		rdl.cursorTo(stdout, 0, y)
+		rdl.clearLine(stdout, 0)
 		stdout.write(this.color(newOption, this._color))
-		this.input = y
+
+		this.selectedItemIndex = index
+		this.cursorPos.y = y
 	}
 
 	downArrow() {
-		let y = this.cursorLocs.y
+		let y = this.cursorPos.y
+		let index = this.selectedItemIndex
+
 		const lastElementIndex = this.getLastElementIndex()
 
-		if (y + 1 >= lastElementIndex && y + 1 !== this.options.length) {
-			//TODO: Why +2
+		rdl.cursorTo(stdout, 0, 2)
+		stdout.write("   " + JSON.stringify({ y, index }) + "  ")
 
-			const startIndex = y + 2 - lastElementIndex
+		//TODO: Why +2 + if
 
-			this.displayOptions(startIndex, y + 2)
-			return
-		}
+		if (
+			y === lastElementIndex + this.#linesBeforeList - 1 &&
+			index !== this.options.length - 1
+		) {
+			const startIndex = index + 2 - lastElementIndex
 
-		rdl.cursorTo(stdout, 0, y + this.#linesBeforeList)
-		stdout.write(this.options[y])
-
-		if (this.cursorLocs.y + 1 === this.options.length) {
-			this.cursorLocs.y = 0
+			this.displayOptions(startIndex, index + 2)
 		} else {
-			this.cursorLocs.y++
-		}
+			const oldOption = this.makeDecoratedOption(index)
+			rdl.cursorTo(stdout, 0, y)
+			stdout.write(oldOption)
 
-		y = this.cursorLocs.y
-		rdl.cursorTo(stdout, 0, y + this.#linesBeforeList)
-		stdout.write(this.color(this.options[y], this._color))
-		this.input = y
+			if (index + 1 === this.options.length) {
+				/*const lastElementIndex = this.getLastElementIndex()
+				this.displayOptions(0, lastElementIndex)
+				this.selectedItemIndex = 0
+				return*/
+			} else {
+				index++
+				if (y <= lastElementIndex + 1) y++
+			}
+
+			const newOption = this.makeDecoratedOption(index)
+
+			rdl.cursorTo(stdout, 0, y)
+			stdout.write(this.color(newOption, this._color))
+			this.selectedItemIndex = index
+			this.cursorPos.y = y
+		}
 	}
 
 	hideCursor() {
