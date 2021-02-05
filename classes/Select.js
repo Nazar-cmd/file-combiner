@@ -164,6 +164,11 @@ class Select {
 			const endIndex = index + lastElementIndex - 1
 
 			this.displayOptions(index - 1, endIndex, true)
+		} else if (index === 0) {
+			const startIndex = this.options.length - lastElementIndex
+			const endIndex = this.options.length
+
+			this.displayOptions(startIndex, endIndex)
 		} else {
 			const oldOption = this.makeDecoratedOption(index)
 
