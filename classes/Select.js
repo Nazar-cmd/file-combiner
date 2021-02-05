@@ -211,6 +211,10 @@ class Select {
 			const startIndex = index + 2 - lastElementIndex
 
 			this.displayOptions(startIndex, index + 2)
+		} else if (index + 1 === this.options.length) {
+			const lastElementIndex = this.getLastElementIndex()
+
+			this.displayOptions(0, lastElementIndex, true)
 		} else {
 			const oldOption = this.makeDecoratedOption(index)
 			rdl.cursorTo(stdout, 0, y)
