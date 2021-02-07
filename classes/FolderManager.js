@@ -5,6 +5,7 @@ import { dirname } from "path"
 import child from "child_process"
 import util from "util"
 import Select from "./Select.js"
+import { clearScreen, writeOnLine } from "../utils/SelectUtils.js"
 
 const { stdout, stdin, stderr } = process
 
@@ -26,22 +27,30 @@ class FolderManager extends Select {
 		this.makeReturnAndFoldersOptions(initialPath)
 	}
 
-	async enter() {
-		this.clearScreen(1)
+	pn(self) {
+		return (key) => {
+			const keyFunction = super.pn(this)(key)
+			if (keyFunction) return keyFunction
+			else if (key === " ") return writeOnLine(2, "space")
+		}
+	}
 
-		const answer = this.answers[this.input]
+	async enter() {
+		clearScreen(1)
+
+		const answer = this.answers[this.selectedItemIndex]
 		this.path = answer
 
+		writeOnLine(1, JSON.stringify({ answer }))
+
 		await this.optionChooser(answer)
-		this.displayOptions()
+		const lastElementIndex = this.getLastElementIndex()
+		this.displayOptions(0, lastElementIndex)
 	}
 
 	async optionChooser(path) {
-		if (path === "MY_COMPUTER") {
-			await this.makeVolumesOptions()
-		} else {
-			this.makeReturnAndFoldersOptions(path)
-		}
+		if (path === "MY_COMPUTER") await this.makeVolumesOptions()
+		else this.makeReturnAndFoldersOptions(path)
 	}
 
 	async makeVolumesOptions() {
@@ -64,6 +73,7 @@ class FolderManager extends Select {
 
 	makeFoldersPaths(folders, path) {
 		const backslash = path[path.length - 1] !== "\\" ? "\\" : ""
+
 		return folders.map((folderName) => `${path}${backslash}${folderName}`)
 	}
 
@@ -76,9 +86,8 @@ class FolderManager extends Select {
 
 	getFoldersByPath(path) {
 		const pathItems = readdirSync(path, { withFileTypes: true })
-		return pathItems
-			.filter((item) => item.isDirectory())
-			.map((folder) => folder.name)
+
+		return pathItems.filter((item) => item.isDirectory()).map((folder) => folder.name)
 	}
 
 	getInitialPath() {

@@ -1,11 +1,11 @@
 import rdl from "readline"
 import {
-	showCursor,
-	hideCursor,
 	getWindowSize,
 	writeOnLine,
 	clearScreen,
-	colorText
+	colorText,
+	startWorkWithRawConsole,
+	endWorkWithRawConsole
 } from "../utils/SelectUtils.js"
 
 const stdout = process.stdout
@@ -56,18 +56,24 @@ class Select {
 		return { before, after }
 	}
 
-	start() {
+	async start() {
+		return new Promise((resolve) => this._start(resolve))
+	}
+
+	_start(resolve) {
 		clearScreen(0)
 		stdout.write(this.question + "\n")
 
 		const lastElementIndex = this.getLastElementIndex()
 		this.displayOptions(0, lastElementIndex)
 
-		stdin.setRawMode(true)
-		stdin.resume()
-		stdin.setEncoding("utf-8")
-		hideCursor()
+		startWorkWithRawConsole()
 		stdin.on("data", this.pn(this))
+		stdin.on("pause", () => {
+			const answer = this.answers[this.selectedItemIndex]
+
+			return resolve(answer)
+		})
 	}
 
 	displayOptions(start, end, cursorOnTop = false) {
@@ -105,25 +111,24 @@ class Select {
 					return self.upArrow()
 				case "\u001b[B":
 					return self.downArrow()
+				default:
+					return null
 			}
 		}
 	}
 
 	enter() {
 		stdin.removeListener("data", this.pn)
-		stdin.setRawMode(false)
-		stdin.pause()
-		showCursor()
-		//TODO:
-		rdl.cursorTo(stdout, 0, 1)
-		console.log("\nYou selected: " + this.answers[this.selectedItemIndex])
+		endWorkWithRawConsole()
+
+		const answerIndex = this.getLastElementIndex() + Select.#linesAfterList + 1
+		writeOnLine(answerIndex, "\nYou selected: " + this.answers[this.selectedItemIndex])
 	}
 
 	ctrlc() {
 		stdin.removeListener("data", this.pn)
-		stdin.setRawMode(false)
-		stdin.pause()
-		showCursor()
+
+		process.exit(0)
 	}
 
 	upArrow() {
@@ -189,7 +194,7 @@ class Select {
 	}
 
 	getLastElementIndex() {
-		const spacing = Select.#linesBeforeList + Select.#linesAfterList
+		const spacing = Select.#linesBeforeList + Select.#linesBeforeList
 
 		return this.windowSize.height - spacing <= this.options.length
 			? this.windowSize.height - spacing
@@ -201,6 +206,8 @@ class Select {
 	}
 }
 
+/*
+
 const stylingTypeSel = new Select({
 	question: "Select Folder with .fna files to continue",
 	pointer: ">",
@@ -209,6 +216,8 @@ const stylingTypeSel = new Select({
 	color: "red"
 })
 
-stylingTypeSel.start()
+const answer = await stylingTypeSel.start()
+
+*/
 
 export default Select

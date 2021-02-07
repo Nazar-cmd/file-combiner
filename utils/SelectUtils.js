@@ -1,6 +1,7 @@
 import rdl from "readline"
 
 const stdout = process.stdout
+const stdin = process.stdin
 
 function showCursor() {
 	stdout.write("\x1B[?25h")
@@ -43,4 +44,24 @@ function getWindowSize() {
 	return { width, height }
 }
 
-export { showCursor, hideCursor, colorText, clearScreen, writeOnLine, getWindowSize }
+function startWorkWithRawConsole() {
+	stdin.setRawMode(true)
+	stdin.resume()
+	stdin.setEncoding("utf-8")
+	hideCursor()
+}
+
+function endWorkWithRawConsole() {
+	stdin.setRawMode(false)
+	stdin.pause()
+	showCursor()
+}
+
+export {
+	startWorkWithRawConsole,
+	endWorkWithRawConsole,
+	colorText,
+	clearScreen,
+	writeOnLine,
+	getWindowSize
+}
