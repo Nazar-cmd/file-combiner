@@ -27,9 +27,9 @@ class FolderManager extends Select {
 		this.makeReturnAndFoldersOptions(initialPath)
 	}
 
-	pn(self) {
+	onDataListener = (self) => {
 		return (key) => {
-			const keyFunction = super.pn(this)(key)
+			const keyFunction = super.onDataListener(this)(key)
 			if (keyFunction) return keyFunction
 			else if (key === " ") return writeOnLine(2, "space")
 		}
@@ -114,7 +114,7 @@ const stylingTypeSel = new FolderManager({
 	color: "red"
 })
 
-const a = await stylingTypeSel.start()
+const a = stylingTypeSel.start()
 
 console.log(a)
 //console.log("123")

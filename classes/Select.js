@@ -67,7 +67,7 @@ class Select {
 		this.displayOptions(0, lastElementIndex)
 
 		startWorkWithRawConsole()
-		stdin.on("data", this.onDataListener)
+		stdin.on("data", this.onDataListener(this))
 		stdin.on("pause", this.onPauseListener)
 	}
 
@@ -99,20 +99,22 @@ class Select {
 		return Promise.resolve(answer)
 	}
 
-	onDataListener = (c) => {
-		switch (c) {
-			case "\u0004": // Ctrl-d
-			case "\r":
-			case "\n":
-				return this.enter()
-			case "\u0003": // Ctrl-c
-				return this.ctrlc()
-			case "\u001b[A":
-				return this.upArrow()
-			case "\u001b[B":
-				return this.downArrow()
-			default:
-				return null
+	onDataListener(self) {
+		return (key) => {
+			switch (key) {
+				case "\u0004": // Ctrl-d
+				case "\r":
+				case "\n":
+					return self.enter()
+				case "\u0003": // Ctrl-c
+					return self.ctrlc()
+				case "\u001b[A":
+					return self.upArrow()
+				case "\u001b[B":
+					return self.downArrow()
+				default:
+					return null
+			}
 		}
 	}
 
