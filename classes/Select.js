@@ -1,4 +1,3 @@
-import rdl from "readline"
 import {
 	getWindowSize,
 	writeOnLine,
@@ -57,10 +56,10 @@ class Select {
 	}
 
 	async start() {
-		return new Promise((resolve) => this._start(resolve))
+		return new Promise(this._start)
 	}
 
-	_start(resolve) {
+	_start = () => {
 		clearScreen(0)
 		stdout.write(this.question + "\n")
 
@@ -68,12 +67,8 @@ class Select {
 		this.displayOptions(0, lastElementIndex)
 
 		startWorkWithRawConsole()
-		stdin.on("data", this.pn(this))
-		stdin.on("pause", () => {
-			const answer = this.answers[this.selectedItemIndex]
-
-			return resolve(answer)
-		})
+		stdin.on("data", this.onDataListener)
+		stdin.on("pause", this.onPauseListener)
 	}
 
 	displayOptions(start, end, cursorOnTop = false) {
@@ -98,35 +93,42 @@ class Select {
 		if (end < this.options.length) stdout.write(" ... ")
 	}
 
-	pn(self) {
-		return (c) => {
-			switch (c) {
-				case "\u0004": // Ctrl-d
-				case "\r":
-				case "\n":
-					return self.enter()
-				case "\u0003": // Ctrl-c
-					return self.ctrlc()
-				case "\u001b[A":
-					return self.upArrow()
-				case "\u001b[B":
-					return self.downArrow()
-				default:
-					return null
-			}
+	onPauseListener = () => {
+		const answer = this.answers[this.selectedItemIndex]
+
+		return Promise.resolve(answer)
+	}
+
+	onDataListener = (c) => {
+		switch (c) {
+			case "\u0004": // Ctrl-d
+			case "\r":
+			case "\n":
+				return this.enter()
+			case "\u0003": // Ctrl-c
+				return this.ctrlc()
+			case "\u001b[A":
+				return this.upArrow()
+			case "\u001b[B":
+				return this.downArrow()
+			default:
+				return null
 		}
 	}
 
 	enter() {
-		stdin.removeListener("data", this.pn)
 		endWorkWithRawConsole()
+		stdin.removeListener("data", this.onDataListener)
+		stdin.removeListener("pause", this.onPauseListener)
 
 		const answerIndex = this.getLastElementIndex() + Select.#linesAfterList + 1
 		writeOnLine(answerIndex, "\nYou selected: " + this.answers[this.selectedItemIndex])
 	}
 
 	ctrlc() {
-		stdin.removeListener("data", this.pn)
+		endWorkWithRawConsole()
+		stdin.removeListener("data", this.onDataListener)
+		stdin.removeListener("pause", this.onPauseListener)
 
 		process.exit(0)
 	}
@@ -206,9 +208,7 @@ class Select {
 	}
 }
 
-/*
-
-const stylingTypeSel = new Select({
+/*const stylingTypeSel = new Select({
 	question: "Select Folder with .fna files to continue",
 	pointer: ">",
 	options: [...Array(100).keys()],
@@ -216,8 +216,6 @@ const stylingTypeSel = new Select({
 	color: "red"
 })
 
-const answer = await stylingTypeSel.start()
-
-*/
+const answer = stylingTypeSel.start()*/
 
 export default Select

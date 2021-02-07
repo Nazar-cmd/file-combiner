@@ -114,6 +114,7 @@ const stylingTypeSel = new FolderManager({
 	color: "red"
 })
 
-stylingTypeSel.start()
+const a = await stylingTypeSel.start()
 
+console.log(a)
 //console.log("123")
