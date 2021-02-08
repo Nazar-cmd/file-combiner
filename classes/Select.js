@@ -1,11 +1,11 @@
-import {
+const {
 	getWindowSize,
 	writeOnLine,
 	clearScreen,
 	colorText,
 	startWorkWithRawConsole,
 	endWorkWithRawConsole
-} from "../utils/SelectUtils.js"
+} = require("../utils")
 
 const stdout = process.stdout
 const stdin = process.stdin
@@ -221,4 +221,4 @@ class Select {
 
 const answer = stylingTypeSel.start()*/
 
-export default Select
+module.exports = Select

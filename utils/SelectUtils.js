@@ -1,4 +1,4 @@
-import rdl from "readline"
+const rdl = require("readline")
 
 const stdout = process.stdout
 const stdin = process.stdin
@@ -57,7 +57,7 @@ function endWorkWithRawConsole() {
 	showCursor()
 }
 
-export {
+module.exports = {
 	startWorkWithRawConsole,
 	endWorkWithRawConsole,
 	colorText,
