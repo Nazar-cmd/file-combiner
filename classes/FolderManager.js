@@ -1,4 +1,3 @@
-import rdl from "readline"
 import { readdirSync } from "fs"
 import { dirname } from "path"
 
@@ -6,8 +5,6 @@ import child from "child_process"
 import util from "util"
 import Select from "./Select.js"
 import { clearScreen, writeOnLine } from "../utils/SelectUtils.js"
-
-const { stdout, stdin, stderr } = process
 
 class FolderManager extends Select {
 	constructor(
@@ -20,16 +17,21 @@ class FolderManager extends Select {
 		}
 	) {
 		super(folderManagerSettings)
+		Select.setSpacing(4, 2)
 
 		const initialPath = this.getInitialPath()
-		//this.path = initialPath;
 
 		this.makeReturnAndFoldersOptions(initialPath)
 	}
 
+	_start() {
+		super._start()
+		this.showPath(this.getInitialPath())
+	}
+
 	onDataListener = (self) => {
 		return (key) => {
-			const keyFunction = super.onDataListener(this)(key)
+			const keyFunction = super.onDataListener(self)(key)
 			if (keyFunction) return keyFunction
 			else if (key === " ") return writeOnLine(2, "space")
 		}
@@ -39,10 +41,8 @@ class FolderManager extends Select {
 		clearScreen(1)
 
 		const answer = this.answers[this.selectedItemIndex]
-		this.path = answer
 
-		writeOnLine(1, JSON.stringify({ answer }))
-
+		this.showPath(answer)
 		await this.optionChooser(answer)
 		const lastElementIndex = this.getLastElementIndex()
 		this.displayOptions(0, lastElementIndex)
@@ -58,6 +58,10 @@ class FolderManager extends Select {
 
 		this.options = [...volumes]
 		this.answers = [...volumes]
+	}
+
+	showPath(path) {
+		writeOnLine(1, `Path: ${path}`)
 	}
 
 	makeReturnAndFoldersOptions(path) {

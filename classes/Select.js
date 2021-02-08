@@ -56,10 +56,10 @@ class Select {
 	}
 
 	async start() {
-		return new Promise(this._start)
+		return new Promise(() => this._start())
 	}
 
-	_start = () => {
+	_start() {
 		clearScreen(0)
 		stdout.write(this.question + "\n")
 
@@ -175,8 +175,6 @@ class Select {
 		const lastElementIndex = this.getLastElementIndex()
 		const lastElementPosition = lastElementIndex + Select.#linesBeforeList
 
-		//TODO: Why +2 + if
-
 		if (y + 1 === lastElementPosition && index + 1 !== this.options.length) {
 			const startIndex = index + 2 - lastElementIndex
 
@@ -213,7 +211,7 @@ class Select {
 	}
 }
 
-const stylingTypeSel = new Select({
+/*const stylingTypeSel = new Select({
 	question: "Select Folder with .fna files to continue",
 	pointer: ">",
 	options: [...Array(100).keys()],
@@ -221,6 +219,6 @@ const stylingTypeSel = new Select({
 	color: "red"
 })
 
-const answer = stylingTypeSel.start()
+const answer = stylingTypeSel.start()*/
 
 export default Select
