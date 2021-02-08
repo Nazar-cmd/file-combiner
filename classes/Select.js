@@ -72,6 +72,9 @@ class Select {
 	}
 
 	displayOptions(start, end, cursorOnTop = false) {
+		if (start > 0) writeOnLine(Select.#linesBeforeList - 1, " ... \n")
+		else writeOnLine(Select.#linesBeforeList - 1, "        ")
+
 		clearScreen(Select.#linesBeforeList)
 
 		for (let opt = start; opt < end; opt++) {
@@ -90,7 +93,7 @@ class Select {
 			} else stdout.write(decoratedOption)
 		}
 
-		if (end < this.options.length) stdout.write(" ... ")
+		if (end < this.options.length) stdout.write(" ... \n")
 	}
 
 	onPauseListener = () => {
@@ -210,7 +213,7 @@ class Select {
 	}
 }
 
-/*const stylingTypeSel = new Select({
+const stylingTypeSel = new Select({
 	question: "Select Folder with .fna files to continue",
 	pointer: ">",
 	options: [...Array(100).keys()],
@@ -218,6 +221,6 @@ class Select {
 	color: "red"
 })
 
-const answer = stylingTypeSel.start()*/
+const answer = stylingTypeSel.start()
 
 export default Select
