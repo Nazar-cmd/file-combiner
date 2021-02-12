@@ -56,10 +56,10 @@ class Select {
 	}
 
 	async start() {
-		return new Promise(() => this._start())
+		return new Promise((resolve) => this._start(resolve))
 	}
 
-	_start() {
+	_start(resolve) {
 		clearScreen(0)
 		stdout.write(this.question + "\n")
 
@@ -68,7 +68,7 @@ class Select {
 
 		startWorkWithRawConsole()
 		stdin.on("data", this.onDataListener(this))
-		stdin.on("pause", this.onPauseListener)
+		stdin.on("pause", this.onPauseListener(resolve))
 	}
 
 	displayOptions(start, end, cursorOnTop = false) {
@@ -96,10 +96,10 @@ class Select {
 		if (end < this.options.length) stdout.write(" ... \n")
 	}
 
-	onPauseListener = () => {
+	onPauseListener = (resolve) => () => {
 		const answer = this.answers[this.selectedItemIndex]
 
-		return Promise.resolve(answer)
+		return resolve(answer)
 	}
 
 	onDataListener(self) {
@@ -211,14 +211,20 @@ class Select {
 	}
 }
 
-/*const stylingTypeSel = new Select({
-	question: "Select Folder with .fna files to continue",
-	pointer: ">",
-	options: [...Array(100).keys()],
-	answers: [...Array(100).keys()],
-	color: "red"
-})
+async function main() {
+	const stylingTypeSel = new Select({
+		question: "Select Folder with .fna files to continue",
+		pointer: ">",
+		options: [...Array(100).keys()],
+		answers: [...Array(100).keys()],
+		color: "red"
+	})
 
-const answer = stylingTypeSel.start()*/
+	const answer = await stylingTypeSel.start()
+
+	console.log(answer)
+}
+
+main()
 
 module.exports = Select
