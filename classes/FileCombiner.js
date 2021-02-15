@@ -1,30 +1,30 @@
-import { progressBar } from "../ProgressBar.js"
-import fs from "fs"
+const progressBar = require("../ProgressBar.js")
+const fs = require("fs")
+const userCommunication = require("../classes/UserCommunication")
 
 class FileCombiner {
-	constructor(filesFolderName) {
-		this.filesFolderName = filesFolderName
-		this.filesFolderPath = `./${filesFolderName}`
+	constructor(filesFolderPath) {
+		this.filesFolderPath = filesFolderPath
 	}
 
 	deleteFileFromFolder(filename) {
-		fs.unlinkSync(`${this.filesFolderPath}/${filename}`)
+		fs.unlinkSync(`${this.filesFolderPath}\\${filename}`)
 		console.log(`File ${filename} was deleted`)
 	}
 
-	folderExists() {
+	/*folderExists() {
 		return fs.existsSync(this.filesFolderPath)
-	}
+	}*/
 
 	getFilesQuantity() {
 		return fs.readdirSync(this.filesFolderPath).length
 	}
 
-	createFilesFolder() {
+	/*createFilesFolder() {
 		fs.mkdirSync(this.filesFolderPath)
-	}
+	}*/
 
-	deleteAllFilesFromFolder() {
+	/*deleteAllFilesFromFolder() {
 		if (fs.existsSync(this.filesFolderPath)) {
 			const filesToDelete = fs.readdirSync(this.filesFolderPath)
 
@@ -38,21 +38,31 @@ class FileCombiner {
 			console.log("No such folder. Empty folder was created.")
 			this.createFilesFolder(this.filesFolderPath)
 		}
-	}
+	}*/
 
-	getFilesFromFolder() {
-		return [...fs.readdirSync(this.filesFolderPath)]
+	getFilesFromFolder(folderPath) {
+		return [...fs.readdirSync(folderPath)]
 	}
 
 	combineFile(file, index) {
-		let fileContent = fs.readFileSync(`${this.filesFolderPath}/${file}`, "utf8")
+		let fileContent = fs.readFileSync(`${this.filesFolderPath}\\${file}`, "utf8")
 
 		const appendContent = index ? `\n${fileContent}` : fileContent
 
-		fs.appendFileSync(`${this.filesFolderPath}/united.fna`, appendContent)
+		fs.appendFileSync(`${this.filesFolderPath}\\united.fna`, appendContent)
 	}
 
-	combineFiles(files) {
+	async combineFiles(files) {
+		if (files.includes("united.fna")) {
+			let answer = ""
+			while (
+				!userCommunication.yesVariants.includes(answer) &&
+				!userCommunication.noVariants.includes(answer)
+			)
+				answer = await userCommunication.askQuestion("united.fna file was found. Delete it? (Y/N)")
+			if (userCommunication.yesVariants.includes(answer)) this.deleteFileFromFolder("united.fna")
+		}
+
 		const filesQuantity = files.length
 		const progressBarUniting = progressBar(filesQuantity, "Uniting files")
 
@@ -62,6 +72,18 @@ class FileCombiner {
 			progressBarUniting(index + 1)
 		})
 	}
+
+	async start() {
+		const files = this.getFilesFromFolder(this.filesFolderPath)
+		await this.combineFiles(files)
+	}
 }
 
-export { FileCombiner }
+async function main() {
+	const fileCombiner = new FileCombiner("C:\\Users\\Nazar\\Desktop\\TestFiles")
+	await fileCombiner.start()
+}
+
+main()
+
+module.exports = FileCombiner

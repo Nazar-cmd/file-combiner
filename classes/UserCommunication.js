@@ -1,4 +1,4 @@
-import readline from "readline"
+const readline = require("readline")
 
 class UserCommunication {
 	noVariants = ["N", "n", "no", "No", "NO"]
@@ -19,4 +19,6 @@ class UserCommunication {
 	}
 }
 
-export default new UserCommunication()
+const userCommunication = new UserCommunication()
+
+module.exports = userCommunication
