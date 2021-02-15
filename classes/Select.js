@@ -126,8 +126,8 @@ class Select {
 		stdin.removeListener("data", this.onDataListener)
 		stdin.removeListener("pause", this.onPauseListener)
 
-		const answerIndex = this.getLastElementIndex() + Select.#linesAfterList + 1
-		writeOnLine(answerIndex, "\nYou selected: " + this.answers[this.selectedItemIndex])
+		//const answerIndex = this.getLastElementIndex() + Select.#linesAfterList + 1
+		//writeOnLine(answerIndex, "\nYou selected: " + this.answers[this.selectedItemIndex])
 	}
 
 	ctrlc() {
@@ -211,7 +211,7 @@ class Select {
 	}
 }
 
-async function main() {
+/*async function main() {
 	const stylingTypeSel = new Select({
 		question: "Select Folder with .fna files to continue",
 		pointer: ">",
@@ -225,6 +225,6 @@ async function main() {
 	console.log(answer)
 }
 
-main()
+main()*/
 
 module.exports = Select

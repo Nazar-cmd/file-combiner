@@ -2,7 +2,6 @@ const util = require("util")
 const child = require("child_process")
 const { readdirSync } = require("fs")
 const { dirname } = require("path")
-const { writeOnLine } = require("./SelectUtils")
 
 async function getVolumesNames() {
 	const exec = util.promisify(child.exec)
@@ -40,15 +39,10 @@ function makeFoldersPaths(folders, path) {
 	return folders.map((folderName) => `${path}${backslash}${folderName}`)
 }
 
-function showPath(path) {
-	writeOnLine(1, `Path: ${path}`)
-}
-
 module.exports = {
 	getInitialPath,
 	getFoldersByPath,
 	removeOnePathLevel,
 	makeFoldersPaths,
-	showPath,
 	getVolumesNames
 }
