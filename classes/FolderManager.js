@@ -45,6 +45,7 @@ class FolderManager extends Select {
 
 	onSpace() {
 		super.enter()
+		clearScreen(0)
 	}
 
 	async enter() {
@@ -106,7 +107,7 @@ class FolderManager extends Select {
 
 FolderManager.setSpacing(4, 2)
 
-async function main() {
+/*async function main() {
 	const stylingTypeSel = new FolderManager({
 		question: "Select Folder with .fna files to continue",
 		pointer: ">",
@@ -118,7 +119,7 @@ async function main() {
 	console.log(a)
 }
 
-main()
+main()*/
 //console.log("123")
 
 module.exports = FolderManager
