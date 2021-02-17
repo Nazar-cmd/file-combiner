@@ -1,9 +1,6 @@
 const readline = require("readline")
 
 class UserCommunication {
-	noVariants = ["N", "n", "no", "No", "NO"]
-	yesVariants = ["Y", "y", "yes", "Yes", "YES"]
-
 	askQuestion(query) {
 		const rl = readline.createInterface({
 			input: process.stdin,

@@ -19,7 +19,30 @@ class FileCombiner {
 		this.#fileType = fileTypeFormat(fileType)
 	}
 
+	async savePreviousEndFile() {
+		const endFilePath = `${this.#filesFolderPath}\\${this.#endFileName}`
+
+		if (!fs.existsSync(endFilePath)) return
+
+		let answer = ""
+
+		while (answer !== "Y" && answer !== "N") {
+			answer = await userCommunication.askQuestion(`Delete previous ${this.#endFileName}? (Y/N): `)
+			answer = answer.toUpperCase()
+		}
+		if (answer === "Y") deleteFileFromFolder(endFilePath)
+		else if (answer.toUpperCase() === "N") {
+			while (fs.existsSync(endFilePath)) {
+				await userCommunication.askQuestion(
+					`${this.#endFileName} detected. Remove it manually and press 'Enter'`
+				)
+			}
+		}
+	}
+
 	async combineFiles(files) {
+		await this.savePreviousEndFile()
+
 		const progressBarUniting = progressBar(files.length, "Uniting files")
 
 		for (let i = 0; i < files.length; i++) {
@@ -52,7 +75,7 @@ class FileCombiner {
 }
 
 async function main() {
-	const fileCombiner = new FileCombiner("C:\\Users\\Nazar\\Desktop\\TestFiles")
+	const fileCombiner = new FileCombiner("C:\\Users\\Nazar\\Desktop\\TestFiles", "fna")
 	await fileCombiner.start()
 }
 
