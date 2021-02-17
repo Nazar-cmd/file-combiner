@@ -1,7 +1,7 @@
-const progressBar = require("../ProgressBar.js")
 const fs = require("fs")
-const userCommunication = require("../classes/UserCommunication")
 const {
+	initProgressBar,
+	askQuestion,
 	deleteFileFromFolder,
 	getFilesFromFolder,
 	filterFilesByType,
@@ -27,23 +27,21 @@ class FileCombiner {
 		let answer = ""
 
 		while (answer !== "Y" && answer !== "N") {
-			answer = await userCommunication.askQuestion(`Delete previous ${this.#endFileName}? (Y/N): `)
+			answer = await askQuestion(`Delete previous ${this.#endFileName}? (Y/N): `)
 			answer = answer.toUpperCase()
 		}
+
 		if (answer === "Y") deleteFileFromFolder(endFilePath)
 		else if (answer.toUpperCase() === "N") {
-			while (fs.existsSync(endFilePath)) {
-				await userCommunication.askQuestion(
-					`${this.#endFileName} detected. Remove it manually and press 'Enter'`
-				)
-			}
+			while (fs.existsSync(endFilePath))
+				await askQuestion(`${this.#endFileName} detected. Remove it manually and press 'Enter'`)
 		}
 	}
 
 	async combineFiles(files) {
 		await this.savePreviousEndFile()
 
-		const progressBarUniting = progressBar(files.length, "Uniting files")
+		const progressBarUniting = initProgressBar(files.length, "Uniting files")
 
 		for (let i = 0; i < files.length; i++) {
 			const file = `${this.#filesFolderPath}\\${files[i]}`
