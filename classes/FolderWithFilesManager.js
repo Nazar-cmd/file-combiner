@@ -4,6 +4,8 @@ const path = require("path")
 const FolderManager = require("./FolderManager")
 
 class FolderWithFilesManager extends FolderManager {
+	#fileType
+
 	constructor(
 		folderWithFilesManagerSettings = {
 			question: "",
@@ -15,7 +17,10 @@ class FolderWithFilesManager extends FolderManager {
 		}
 	) {
 		super(folderWithFilesManagerSettings)
-		this.fileType = folderWithFilesManagerSettings.fileType
+
+		const { fileType } = folderWithFilesManagerSettings
+
+		this.#fileType = fileType.startsWith(".") ? fileType : `.${fileType}`
 	}
 
 	getFilesFromFolder(folderPath) {
