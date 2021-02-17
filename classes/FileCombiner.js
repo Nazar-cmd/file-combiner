@@ -1,8 +1,11 @@
 const progressBar = require("../ProgressBar.js")
 const fs = require("fs")
 const userCommunication = require("../classes/UserCommunication")
+const path = require("path")
 
 class FileCombiner {
+	static #endFileName = "_united.fna"
+
 	constructor(filesFolderPath) {
 		this.filesFolderPath = filesFolderPath
 	}
@@ -15,10 +18,10 @@ class FileCombiner {
 	/*folderExists() {
 		return fs.existsSync(this.filesFolderPath)
 	}*/
-
+	/*
 	getFilesQuantity() {
 		return fs.readdirSync(this.filesFolderPath).length
-	}
+	}*/
 
 	/*createFilesFolder() {
 		fs.mkdirSync(this.filesFolderPath)
@@ -41,37 +44,59 @@ class FileCombiner {
 	}*/
 
 	getFilesFromFolder(folderPath) {
-		return [...fs.readdirSync(folderPath)]
-	}
-
-	combineFile(file, index) {
-		let fileContent = fs.readFileSync(`${this.filesFolderPath}\\${file}`, "utf8")
-
-		const appendContent = index ? `\n${fileContent}` : fileContent
-
-		fs.appendFileSync(`${this.filesFolderPath}\\united.fna`, appendContent)
+		return fs.readdirSync(folderPath).filter((file) => path.extname(file) === ".fna")
 	}
 
 	async combineFiles(files) {
-		if (files.includes("united.fna")) {
+		if (files.includes(FileCombiner.#endFileName))
+			this.deleteFileFromFolder(FileCombiner.#endFileName)
+
+		const progressBarUniting = progressBar(files.length, "Uniting files")
+
+		for (let i = 0; i < files.length; i++) {
+			const file = `${this.filesFolderPath}\\${files[i]}`
+
+			const r1 = fs.createReadStream(file)
+			const w = fs.createWriteStream(`${this.filesFolderPath}\\${FileCombiner.#endFileName}`, {
+				flags: "a"
+			})
+
+			i && w.write("\n")
+
+			await new Promise((resolve) =>
+				r1.pipe(w).on("finish", () => {
+					resolve()
+					progressBarUniting(i + 1)
+				})
+			)
+		}
+
+		//return index ? `\n${fileContent}` : fileContent*/
+	}
+
+	/*async combineFiles(files) {
+		/!*		if (files.includes("united.fna")) {
 			let answer = ""
 			while (
 				!userCommunication.yesVariants.includes(answer) &&
 				!userCommunication.noVariants.includes(answer)
-			)
-				answer = await userCommunication.askQuestion("united.fna file was found. Delete it? (Y/N)")
-			if (userCommunication.yesVariants.includes(answer)) this.deleteFileFromFolder("united.fna")
-		}
+			) {
+				answer = await userCommunication.askQuestion(
+					"united.fna file was found. Delete it? (Y/N): "
+				)
+			}
+			if (userCommunication.yesVariants.includes(answer)) {
+				this.deleteFileFromFolder("united.fna")
+				const fileIndex = files.indexOf("united.fna")
+				files.splice(fileIndex, 1)
+			}
+		}*!/
 
+		this.writeStream = fs.createWriteStream(`${this.filesFolderPath}\\united.fna`, { flags: "a" })
 		const filesQuantity = files.length
-		const progressBarUniting = progressBar(filesQuantity, "Uniting files")
 
-		files.forEach((file, index) => {
-			this.combineFile(file, index)
-
-			progressBarUniting(index + 1)
-		})
-	}
+		await files.forEach(this.combineFile)
+	}*/
 
 	async start() {
 		const files = this.getFilesFromFolder(this.filesFolderPath)
