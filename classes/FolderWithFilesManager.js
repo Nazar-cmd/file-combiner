@@ -4,7 +4,8 @@ const {
 	getFilesFromFolder,
 	filterFilesByType,
 	fileTypeFormat,
-	ignoreSpecialNamedFiles
+	ignoreSpecialNamedFiles,
+	errorToText
 } = require("../utils")
 
 class FolderWithFilesManager extends FolderManager {
@@ -37,7 +38,8 @@ class FolderWithFilesManager extends FolderManager {
 			if (usefulFiles.length < 2) this.showTip(`There is less than 2 ${this.#fileType} files`)
 			else super.onSpace()
 		} catch (error) {
-			this.showError(error)
+			const erText = errorToText(error)
+			this.showTip(erText)
 		}
 	}
 }

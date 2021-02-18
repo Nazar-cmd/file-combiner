@@ -7,7 +7,8 @@ const {
 	getInitialPath,
 	clearScreen,
 	writeOnLine,
-	colorText
+	colorText,
+	errorToText
 } = require("../utils")
 
 class FolderManager extends Select {
@@ -58,7 +59,8 @@ class FolderManager extends Select {
 			const lastElementIndex = this.getLastElementIndex()
 			this.displayOptions(0, lastElementIndex)
 		} catch (error) {
-			this.showError(error)
+			const erText = errorToText(error)
+			this.showTip(erText)
 		}
 	}
 
@@ -92,16 +94,6 @@ class FolderManager extends Select {
 	showTip(tip) {
 		const tipText = colorText(`! ${tip}`, "red")
 		writeOnLine(this.#tipLine, tipText)
-	}
-
-	showError(error) {
-		let erText = error.message
-		for (const key in error) erText = erText.replace(error[key], "")
-		erText = erText
-			.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()']/g, "")
-			.trim()
-			.toUpperCase()
-		this.showTip(erText)
 	}
 }
 

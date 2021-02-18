@@ -1,4 +1,5 @@
 const fs = require("fs")
+const { colorText } = require("../utils")
 const { startWorkWithRawConsole, endWorkWithRawConsole } = require("../utils")
 
 const {
@@ -8,7 +9,8 @@ const {
 	getFilesFromFolder,
 	filterFilesByType,
 	fileTypeFormat,
-	ignoreSpecialNamedFiles
+	ignoreSpecialNamedFiles,
+	errorToText
 } = require("../utils")
 
 class FileCombiner {
@@ -70,12 +72,22 @@ class FileCombiner {
 	}
 
 	async start() {
-		const files = getFilesFromFolder(this.#filesFolderPath)
+		try {
+			const files = getFilesFromFolder(this.#filesFolderPath)
 
-		const oneTypeFilesOnly = filterFilesByType(files, this.#fileType)
-		const withoutSpecialFiles = ignoreSpecialNamedFiles(oneTypeFilesOnly, this.#endFileName)
+			const oneTypeFilesOnly = filterFilesByType(files, this.#fileType)
+			const withoutSpecialFiles = ignoreSpecialNamedFiles(oneTypeFilesOnly, this.#endFileName)
 
-		await this.combineFiles(withoutSpecialFiles)
+			await this.combineFiles(withoutSpecialFiles)
+
+			console.log("\nCombining successfully done!")
+		} catch (error) {
+			const erText = errorToText(error)
+
+			console.log("\n" + colorText(erText, "red"))
+		} finally {
+			console.log("\nPress any key to exit...")
+		}
 	}
 }
 

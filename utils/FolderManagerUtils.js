@@ -39,7 +39,19 @@ function makeFoldersPaths(folders, path) {
 	return folders.map((folderName) => `${path}${backslash}${folderName}`)
 }
 
+function errorToText(error) {
+	let erText = error.message
+	for (const key in error) erText = erText.replace(error[key], "")
+	erText = erText
+		.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()']/g, "")
+		.trim()
+		.toUpperCase()
+
+	return erText
+}
+
 module.exports = {
+	errorToText,
 	getInitialPath,
 	getFoldersByPath,
 	removeOnePathLevel,
