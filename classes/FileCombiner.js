@@ -1,4 +1,5 @@
 const fs = require("fs")
+const { startWorkWithRawConsole, endWorkWithRawConsole } = require("../utils")
 
 const {
 	initProgressBar,
@@ -42,8 +43,9 @@ class FileCombiner {
 	async combineFiles(files) {
 		await this.savePreviousEndFile()
 
-		const progressBarUniting = initProgressBar(files.length, "Uniting files")
+		const progressBarUniting = initProgressBar(files.length, "\nUniting files")
 
+		startWorkWithRawConsole()
 		for (let i = 0; i < files.length; i++) {
 			const file = `${this.#filesFolderPath}\\${files[i]}`
 
@@ -61,6 +63,7 @@ class FileCombiner {
 				})
 			)
 		}
+		endWorkWithRawConsole()
 	}
 
 	async start() {
