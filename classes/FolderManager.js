@@ -49,10 +49,10 @@ class FolderManager extends Select {
 	}
 
 	async enter() {
-		try {
-			const answer = this.answers[this.selectedItemIndex]
-			await this.optionChooser(answer)
+		const answer = this.answers[this.selectedItemIndex]
 
+		try {
+			await this.optionChooser(answer)
 			clearScreen(1)
 			this.showPath(answer)
 			const lastElementIndex = this.getLastElementIndex()

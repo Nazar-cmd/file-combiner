@@ -29,13 +29,16 @@ class FolderWithFilesManager extends FolderManager {
 
 	onSpace() {
 		const answer = this.answers[this.selectedItemIndex]
+		try {
+			const files = getFilesFromFolder(answer)
 
-		const files = getFilesFromFolder(answer)
+			const usefulFiles = filterFilesByType(files, this.#fileType)
 
-		const usefulFiles = filterFilesByType(files, this.#fileType)
-
-		if (usefulFiles.length < 2) this.showTip(`There is less than 2 ${this.#fileType} files`)
-		else super.onSpace()
+			if (usefulFiles.length < 2) this.showTip(`There is less than 2 ${this.#fileType} files`)
+			else super.onSpace()
+		} catch (error) {
+			this.showError(error)
+		}
 	}
 }
 

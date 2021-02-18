@@ -123,14 +123,10 @@ class Select {
 
 	enter() {
 		endWorkWithRawConsole()
-		stdin.removeAllListeners("data")
-		stdin.removeAllListeners("pause")
 	}
 
 	ctrlc() {
 		endWorkWithRawConsole()
-		stdin.removeListener("data", this.onDataListener)
-		stdin.removeListener("pause", this.onPauseListener)
 
 		process.exit(0)
 	}

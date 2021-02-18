@@ -55,6 +55,9 @@ function endWorkWithRawConsole() {
 	stdin.setRawMode(false)
 	stdin.pause()
 	showCursor()
+
+	stdin.removeAllListeners("data")
+	stdin.removeAllListeners("pause")
 }
 
 module.exports = {

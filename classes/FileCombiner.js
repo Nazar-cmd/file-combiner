@@ -43,7 +43,10 @@ class FileCombiner {
 	async combineFiles(files) {
 		await this.savePreviousEndFile()
 
-		const progressBarUniting = initProgressBar(files.length, "\nUniting files")
+		const progressBarUniting = initProgressBar(
+			files.length,
+			`\nUniting files in ${this.#filesFolderPath}`
+		)
 
 		startWorkWithRawConsole()
 		for (let i = 0; i < files.length; i++) {
