@@ -35,7 +35,7 @@ class FolderManager extends Select {
 		this.showTip("Press 'Enter' to change folder, 'Space' to select")
 	}
 
-	onDataListener = (self) => {
+	onDataListener(self) {
 		return (key) => {
 			const keyFunction = super.onDataListener(self)(key)
 			if (keyFunction) return keyFunction
@@ -44,8 +44,8 @@ class FolderManager extends Select {
 	}
 
 	onSpace() {
-		super.enter()
 		clearScreen(0)
+		super.enter()
 	}
 
 	async enter() {
@@ -114,9 +114,9 @@ FolderManager.setSpacing(4, 2)
 		color: "red"
 	})
 
-	const a = await stylingTypeSel.start()
+	await stylingTypeSel.start()
 
-	console.log(a)
+	await setTimeout(Promise.resolve, 100000)
 }
 
 main()*/

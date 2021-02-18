@@ -1,4 +1,5 @@
 const fs = require("fs")
+
 const {
 	initProgressBar,
 	askQuestion,
@@ -71,12 +72,5 @@ class FileCombiner {
 		await this.combineFiles(withoutSpecialFiles)
 	}
 }
-
-async function main() {
-	const fileCombiner = new FileCombiner("C:\\Users\\Nazar\\Desktop\\TestFiles", "fna")
-	await fileCombiner.start()
-}
-
-main()
 
 module.exports = FileCombiner

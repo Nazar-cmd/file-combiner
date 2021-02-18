@@ -123,11 +123,8 @@ class Select {
 
 	enter() {
 		endWorkWithRawConsole()
-		stdin.removeListener("data", this.onDataListener)
-		stdin.removeListener("pause", this.onPauseListener)
-
-		//const answerIndex = this.getLastElementIndex() + Select.#linesAfterList + 1
-		//writeOnLine(answerIndex, "\nYou selected: " + this.answers[this.selectedItemIndex])
+		stdin.removeAllListeners("data")
+		stdin.removeAllListeners("pause")
 	}
 
 	ctrlc() {
@@ -222,7 +219,7 @@ class Select {
 
 	const answer = await stylingTypeSel.start()
 
-	console.log(answer)
+	await askQuestion("dsfsdfsdfdf")
 }
 
 main()*/

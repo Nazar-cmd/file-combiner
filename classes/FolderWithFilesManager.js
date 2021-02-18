@@ -1,7 +1,11 @@
-const fs = require("fs")
-const path = require("path")
-
 const FolderManager = require("./FolderManager")
+
+const {
+	getFilesFromFolder,
+	filterFilesByType,
+	fileTypeFormat,
+	ignoreSpecialNamedFiles
+} = require("../utils")
 
 class FolderWithFilesManager extends FolderManager {
 	#fileType
@@ -20,26 +24,22 @@ class FolderWithFilesManager extends FolderManager {
 
 		const { fileType } = folderWithFilesManagerSettings
 
-		this.#fileType = fileType.startsWith(".") ? fileType : `.${fileType}`
-	}
-
-	getFilesFromFolder(folderPath) {
-		return [...fs.readdirSync(folderPath)]
+		this.#fileType = fileTypeFormat(fileType)
 	}
 
 	onSpace() {
 		const answer = this.answers[this.selectedItemIndex]
 
-		const files = this.getFilesFromFolder(answer)
+		const files = getFilesFromFolder(answer)
 
-		const usefulFiles = files.filter((file) => path.extname(file) === this.fileType)
+		const usefulFiles = filterFilesByType(files, this.#fileType)
 
-		if (usefulFiles.length < 2) this.showTip(`There is less than 2 ${this.fileType} files`)
+		if (usefulFiles.length < 2) this.showTip(`There is less than 2 ${this.#fileType} files`)
 		else super.onSpace()
 	}
 }
 
-async function main() {
+/*async function main() {
 	const stylingTypeSel = new FolderWithFilesManager({
 		question: "Select Folder with .fna files to continue",
 		pointer: ">",
@@ -47,12 +47,11 @@ async function main() {
 		fileType: ".fna"
 	})
 
-	const a = await stylingTypeSel.start()
+	await stylingTypeSel.start()
 
-	console.log(a)
-	console.log(123)
+	await askQuestion("dsfsdfsdfdf")
 }
 
-main()
+main()*/
 
 module.exports = FolderWithFilesManager
