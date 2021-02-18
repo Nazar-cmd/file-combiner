@@ -52,7 +52,12 @@ class FolderManager extends Select {
 	async enter() {
 		const answer = this.answers[this.selectedItemIndex]
 
-		try {
+		await this.optionChooser(answer)
+		clearScreen(1)
+		this.showPath(answer)
+		const lastElementIndex = this.getLastElementIndex()
+		this.displayOptions(0, lastElementIndex)
+		/*	try {
 			await this.optionChooser(answer)
 			clearScreen(1)
 			this.showPath(answer)
@@ -61,7 +66,7 @@ class FolderManager extends Select {
 		} catch (error) {
 			const erText = errorToText(error)
 			this.showTip(erText)
-		}
+		}*/
 	}
 
 	async optionChooser(path) {

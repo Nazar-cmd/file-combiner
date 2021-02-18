@@ -1,6 +1,6 @@
 const util = require("util")
 const child = require("child_process")
-const { readdirSync } = require("fs")
+const rs = require("fs")
 const { dirname } = require("path")
 
 async function getVolumesNames() {
@@ -21,7 +21,7 @@ function getInitialPath() {
 }
 
 function getFoldersByPath(path) {
-	const pathItems = readdirSync(path, { withFileTypes: true })
+	const pathItems = rs.readdirSync(path, { withFileTypes: true })
 
 	return pathItems.filter((item) => item.isDirectory()).map((folder) => folder.name)
 }

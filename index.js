@@ -15,4 +15,4 @@ async function main() {
 	await fileCombiner.start()
 }
 
-main()
+module.exports = main
