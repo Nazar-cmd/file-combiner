@@ -37,7 +37,7 @@ class Select {
 	 * */
 	static #linesAfterList = 2
 
-	/**
+	/** Init of settings
 	 * @param {object} selectSettings 			   - Settings for list
 	 * @property {string} selectSettings.question  - question to the list of answers
 	 * @property {string[]} selectSettings.options - array of visible options
@@ -48,7 +48,6 @@ class Select {
 	constructor(selectSettings) {
 		let { question, options = [], answers = [], pointer = ">", color = "blue" } = selectSettings
 
-		//Errors if unsuitable params
 		if (question.length <= 0) throw Error("There must be a 'question'")
 		if (options.length !== answers.length)
 			throw Error("'answers' and 'options' must be of the same length")
@@ -193,8 +192,7 @@ class Select {
 		}
 	}
 
-	/** On Enter key pressed function
-	 * */
+	/** On Enter key pressed function*/
 	enter() {
 		endWorkWithRawConsole()
 	}
