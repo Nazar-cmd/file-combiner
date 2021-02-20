@@ -15,7 +15,7 @@ const {
 /**Class which enables to search folder in filesystem with arrow/enter/space keys
  * @class
  * @extends Select
- * @requires ...utils:utils/SelectUtils
+ * @requires ...utils:utils/FolderManagerUtils
  * @requires Select
  * */
 class FolderManager extends Select {

@@ -1,3 +1,4 @@
+/**@module FolderWithFilesManager*/
 const FolderManager = require("./FolderManager")
 
 const {
@@ -8,26 +9,40 @@ const {
 	errorToText
 } = require("../utils")
 
+/**Class which allows as to select folder only with at least two files of the specified type
+ * @class
+ * @extends FolderManager
+ * @requires ...utils:utils/FolderManagerUtils
+ * @requires FolderManager
+ * */
 class FolderWithFilesManager extends FolderManager {
+	/**
+	 * Wanted file type
+	 * @type {string}
+	 * @private
+	 * */
 	#fileType
 
-	constructor(
-		folderWithFilesManagerSettings = {
-			question: "",
-			options: [],
-			answers: [],
-			pointer: ">",
-			color: "blue",
-			fileType: ""
-		}
-	) {
+	/** Init of settings
+	 * @param {object} folderWithFilesManagerSettings  - Settings for list
+	 * @property {string} selectSettings.question 	   - question to the list of answers
+	 * @property {string[]} selectSettings.options     - array of visible options
+	 * @property {string[]} selectSettings.answers     - array of returnable answers
+	 * @property {string} [selectSettings.pointer]     - sign before every option
+	 * @property {string} [selectSettings.color]       - name of selected option color
+	 * @property {string} [fileType]       			   - with this filetype files folder must to be
+	 * */
+	constructor(folderWithFilesManagerSettings) {
 		super(folderWithFilesManagerSettings)
 
-		const { fileType } = folderWithFilesManagerSettings
+		const { fileType = ".txt" } = folderWithFilesManagerSettings
 
 		this.#fileType = fileTypeFormat(fileType)
 	}
 
+	/** Checking if folder contains at least two files with filetype
+	 * @override
+	 * */
 	onSpace() {
 		const answer = this.answers[this.selectedItemIndex]
 		try {
@@ -43,20 +58,5 @@ class FolderWithFilesManager extends FolderManager {
 		}
 	}
 }
-
-/*async function main() {
-	const stylingTypeSel = new FolderWithFilesManager({
-		question: "Select Folder with .fna files to continue",
-		pointer: ">",
-		color: "red",
-		fileType: ".fna"
-	})
-
-	await stylingTypeSel.start()
-
-	await askQuestion("dsfsdfsdfdf")
-}
-
-main()*/
 
 module.exports = FolderWithFilesManager
