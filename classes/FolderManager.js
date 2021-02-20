@@ -97,7 +97,8 @@ class FolderManager extends Select {
 	}
 }
 
-FolderManager.setSpacing(4, 2)
+FolderManager.setSpacingBefore(4)
+FolderManager.setSpacingAfter(2)
 
 /*async function main() {
 	const stylingTypeSel = new FolderManager({
