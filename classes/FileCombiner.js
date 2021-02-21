@@ -3,7 +3,7 @@ const fs = require("fs")
 const {
 	initProgressBar,
 	askQuestion,
-	deleteFileFromFolder,
+	deleteFile,
 	getFilesFromFolder,
 	filterFilesByType,
 	fileTypeFormat,
@@ -64,7 +64,7 @@ class FileCombiner {
 			answer = answer.toUpperCase()
 		}
 
-		if (answer === "Y") deleteFileFromFolder(endFilePath)
+		if (answer === "Y") deleteFile(endFilePath)
 		else if (answer.toUpperCase() === "N") {
 			while (fs.existsSync(endFilePath))
 				await askQuestion(`${this.#endFileName} detected. Remove it manually and press 'Enter'`)
